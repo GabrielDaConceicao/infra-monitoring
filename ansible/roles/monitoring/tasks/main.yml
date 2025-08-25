@@ -1,0 +1,111 @@
+# roles/monitoring/tasks/main.yml
+
+- name: Install Docker, git, and pip
+  package:
+    name:
+      - docker
+      - git
+      - python3-pip
+    state: present
+
+- name: Enable and start Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Download Docker Compose plugin
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64
+    dest: /usr/libexec/docker/cli-plugins/docker-compose
+    mode: '0755'
+
+- name: Create plugins dir
+  file:
+    path: /usr/libexec/docker/cli-plugins
+    state: directory
+    mode: '0755'
+# -----------------------
+# Criar diretório da aplicação
+# -----------------------
+- name: Create monitoring app directory
+  file:
+    path: /opt/monitoring
+    state: directory
+    mode: '0755'
+
+# -----------------------
+# Node Exporter
+# -----------------------
+- name: Download node_exporter
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter.tar.gz
+
+- name: Create node_exporter directory
+  file:
+    path: /opt/node_exporter
+    state: directory
+    mode: '0755'
+
+- name: Extract node_exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /opt/node_exporter
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+
+- name: Make node_exporter executable
+  file:
+    path: /opt/node_exporter/node_exporter
+    mode: '0755'
+
+- name: Create systemd service for node_exporter
+  copy:
+    dest: /etc/systemd/system/node_exporter.service
+    content: |
+      [Unit]
+      Description=Node Exporter
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=root
+      ExecStart=/opt/node_exporter/node_exporter
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+    mode: '0644'
+
+- name: Reload systemd to read new unit
+  command: systemctl daemon-reload
+
+- name: Enable and start node_exporter service
+  systemd:
+    name: node_exporter
+    enabled: yes
+    state: started
+
+# -----------------------
+# Deploy Prometheus
+# -----------------------
+- name: Deploy prometheus.yml
+  template:
+    src: templates/prometheus.yml.j2
+    dest: /opt/monitoring/prometheus.yml
+    mode: '0644'
+
+# -----------------------
+# Deploy Docker Compose
+# -----------------------
+- name: Deploy docker-compose.yml
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: /opt/monitoring/docker-compose.yml
+    mode: '0644'
+
+- name: Pull and start containers with Docker Compose V2
+  community.docker.docker_compose_v2:
+    project_src: /opt/monitoring
+    state: present
