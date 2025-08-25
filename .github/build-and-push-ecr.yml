@@ -1,27 +1,37 @@
 name: Build and Push to ECR
+
 on:
-push:
-branches: [ main ]
+  push:
+    branches: [ main ]
+
 jobs:
-build:
-runs-on: ubuntu-latest
-permissions:
-id-token: write
-contents: read
-steps:
-- uses: actions/checkout@v4
-- name: Configure AWS creds (OIDC)
-uses: aws-actions/configure-aws-credentials@v4
-with:
-role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
-aws-region: us-east-2
-- name: Login to ECR
-uses: aws-actions/amazon-ecr-login@v2
-- name: Build, tag, and push
-env:
-ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-ECR_REPOSITORY: static-site-demo-repo
-IMAGE_TAG: ${{ github.sha }}
-run: |
-docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS creds (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: us-east-2
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: meu-portifolio
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest

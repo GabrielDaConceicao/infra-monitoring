@@ -1,14 +1,14 @@
 variable "project_name" { 
     type = string 
-    default = "static-site-demo" 
+    default = "meu-portfolio" 
 }
 variable "region" { 
     type = string 
-    default = "us-east-1" 
+    default = "us-east-2" 
 }
 variable "ec2_key_name" { 
     type = string 
-    description = "Nome do key pair para SSH" 
+    description = "awskey" 
 }
 variable "allow_cidr" { 
     type = string 
