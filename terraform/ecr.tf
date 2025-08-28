@@ -1,8 +1,3 @@
-provider "aws" {
-  region = "us-east-2"
-}
-
-# Criar repositório no ECR
 resource "aws_ecr_repository" "repo" {
   name                 = "meu.portifolio"
   image_tag_mutability = "MUTABLE"

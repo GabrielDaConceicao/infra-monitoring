@@ -1,6 +1,6 @@
 variable "project_name" { 
     type = string 
-    default = "meu-portfolio" 
+    default = "meu.portfolio" 
 }
 variable "region" { 
     type = string 

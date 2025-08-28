@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "site_bucket" {
-bucket = "${var.project_name}-site-${random_string.rand_id.result}"
+bucket = "${var.project_name}site-${random_string.rand_id.result}"
 }
 resource "random_string" "rand_id" {
 length = 6

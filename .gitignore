@@ -1,0 +1,45 @@
+# ======================
+# Terraform
+# ======================
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+*.tfvars
+crash.log
+override.tf
+override.tf.json
+*.backup
+*.log
+*.hcl
+
+# Ignore sensitive files (ex: secrets)
+secret.tfvars
+*.pem
+*.key
+
+# ======================
+# Website (Next.js/React/Node)
+# ======================
+
+# Dependências
+website/node_modules/
+
+# Build output
+website/.next/
+website/out/
+website/build/
+
+# Logs
+website/*.log
+website/npm-debug.log*
+website/yarn-error.log
+website/.pnpm-debug.log*
+
+# Sistema
+website/.DS_Store
+
+# Ambiente
+website/.env
+website/.env.local
+website/.env.*.local
