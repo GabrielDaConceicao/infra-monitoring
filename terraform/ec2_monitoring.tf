@@ -54,12 +54,20 @@ values = ["al2023-ami-*-x86_64"]
 
 
 resource "aws_instance" "monitor" {
-ami = data.aws_ami.al2023.id
-instance_type = "t3.micro"
-key_name = var.ec2_key_name
-vpc_security_group_ids = [aws_security_group.monitor_sg.id]
-associate_public_ip_address = true
-tags = { Name = "${var.project_name}-monitor" }
+  ami                         = data.aws_ami.al2023.id
+  instance_type               = "t3.micro"
+  key_name                    = var.ec2_key_name
+  vpc_security_group_ids       = [aws_security_group.monitor_sg.id]
+  associate_public_ip_address = true
+
+  tags = { Name = "${var.project_name}-monitor" }
+
+  root_block_device {
+    volume_size           = 10   # tamanho do disco em GB
+    volume_type           = "gp3" # tipo do volume, pode ser gp2, gp3, io1, etc.
+    delete_on_termination = true  # opcional, deleta o disco ao destruir a instância
+  }
+
 
 
 user_data = <<-EOF
