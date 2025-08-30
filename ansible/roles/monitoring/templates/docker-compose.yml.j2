@@ -32,6 +32,13 @@ services:
     command:
       - '--path.rootfs=/host'
 
+  meu_portifolio:
+    image: "{{ ecr_registry }}/meu.portifolio:{{ image_tag }}"
+    container_name: meu_portifolio
+    ports:
+      - "80:80"
+    restart: unless-stopped    
+
 volumes:
   grafana-data:
 

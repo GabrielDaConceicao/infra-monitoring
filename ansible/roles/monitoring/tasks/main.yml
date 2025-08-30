@@ -1,5 +1,15 @@
 # roles/monitoring/tasks/main.yml
 
+- name: Deploy monitoring + app
+  hosts: app_servers
+  become: yes
+  vars:
+    node_exporter_version: "latest"  # exemplo
+    ecr_registry: "905418427814.dkr.ecr.us-east-2.amazonaws.com/meu.portifolio"  # Ex: 123456789012.dkr.ecr.us-east-2.amazonaws.com
+    image_tag: "latest"  # substituir pelo commit SHA do GitHub
+
+  tasks:
+  
 - name: Install Docker, git, and pip
   package:
     name:
@@ -14,17 +24,18 @@
     state: started
     enabled: yes
 
+- name: Create plugins dir
+  file:
+    path: /usr/libexec/docker/cli-plugins
+    state: directory
+    mode: '0755'
+
 - name: Download Docker Compose plugin
   get_url:
     url: https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-linux-x86_64
     dest: /usr/libexec/docker/cli-plugins/docker-compose
     mode: '0755'
 
-- name: Create plugins dir
-  file:
-    path: /usr/libexec/docker/cli-plugins
-    state: directory
-    mode: '0755'
 # -----------------------
 # Criar diretório da aplicação
 # -----------------------
