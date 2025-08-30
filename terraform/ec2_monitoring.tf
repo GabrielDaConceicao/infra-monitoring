@@ -45,7 +45,7 @@ data "aws_vpc" "default" { default = true }
 
 data "aws_ami" "al2023" {
 most_recent = true
-owners = ["137112412989"] # Amazon
+owners = ["137112412989"] 
 filter {
 name = "name"
 values = ["al2023-ami-*-x86_64"]
@@ -63,9 +63,9 @@ resource "aws_instance" "monitor" {
   tags = { Name = "${var.project_name}-monitor" }
 
   root_block_device {
-    volume_size           = 10   # tamanho do disco em GB
-    volume_type           = "gp3" # tipo do volume, pode ser gp2, gp3, io1, etc.
-    delete_on_termination = true  # opcional, deleta o disco ao destruir a instância
+    volume_size           = 10  
+    volume_type           = "gp3" 
+    delete_on_termination = true  
   }
 
 
