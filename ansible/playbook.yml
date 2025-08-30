@@ -3,5 +3,7 @@
   become: yes
   vars:
     node_exporter_version: "1.8.2"
+    ecr_registry: "905418427814.dkr.ecr.us-east-2.amazonaws.com/meu.portifolio"
+    image_tag: "latest"
   roles:
     - monitoring
